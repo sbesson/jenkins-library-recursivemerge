@@ -24,7 +24,7 @@ def call(Map pipelineParams) {
                 steps {
 
                     // build is in .gitignore so we can use it as a temp dir
-                    sh 'mkdir build'
+                    sh 'mkdir -p build'
                     sh 'cd build && curl -sfL https://github.com/ome/build-infra/archive/master.tar.gz | tar -zxf -'
                     sh 'virtualenv build/venv && build/venv/bin/pip install scc'
 
