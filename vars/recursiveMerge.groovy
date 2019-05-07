@@ -28,7 +28,7 @@ def call(Map pipelineParams) {
                     sh 'cd build && curl -sfL https://github.com/ome/build-infra/archive/master.tar.gz | tar -zxf -'
                     sh 'virtualenv build/venv && build/venv/bin/pip install scc'
 
-                    copyArtifacts(projectName: pipelineParams.parentVersions, flatten: true,
+                    copyArtifacts(projectName: pipelineParams.parentVersions, flatten: false,
                                   filter: pipelineParams.versionFile, target: 'build')
 
                     sh """
