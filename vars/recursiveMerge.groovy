@@ -19,17 +19,6 @@ def call(Map pipelineParams) {
             )
         }
 
-        environment {
-            // These optional environment variables can be set in
-            // Manage Jenkins → Configure System → Global properties → Environment variables
-
-            // MERGE_PUSH_BRANCH the branch that merges should be pushed to, default "merge"
-            // MERGE_GIT_USER the GitHub user that the repo branches should be pushed to
-            //   default is the owner of the CI node's GitHub token
-
-            BASE_REPO = pipelineParams.baseRepo
-        }
-
         stages {
             stage('Merge') {
                 steps {
@@ -43,6 +32,7 @@ def call(Map pipelineParams) {
                                   filter: pipelineParams.versionFile, target: 'build')
 
                     sh """
+                        export BASE_REPO=${pipelineParams.baseRepo}
 
                         # Workaround for "unflattened" file, possibly due to matrix
                         find build/ -path "*/${pipelineParams.versionFile}" -exec cp {} build/version.tsv \\;
