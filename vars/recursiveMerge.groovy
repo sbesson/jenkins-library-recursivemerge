@@ -11,7 +11,7 @@ def call(Map pipelineParams) {
         export BASE_REPO=${pipelineParams.baseRepo}
 
         # Workaround for "unflattened" file, possibly due to matrix
-        find build/ -path "*/${pipelineParams.versionFile}" -exec cp {} build/version.tsv \\;
+        find build/ -path "${pipelineParams.versionFile}" -exec cp {} build/version.tsv \\;
         test -e build/version.tsv
         export VERSION_LOG=${env.WORKSPACE}/build/version.tsv
 
