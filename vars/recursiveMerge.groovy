@@ -1,7 +1,13 @@
 def call(Map pipelineParams) {
+
+    def buildInfraRepo = pipelineParams.get('buildInfraRepo', 'joshmoore')
+    def buildInfraBranch = pipelineParams.get('buildInfraBranch', 'single-repo')
+    def buildInfraUrl = pipelineParams.get('buildInfraUrl', 'https://github.com/${buildInfraRepo}/build-infra/archive/${buildInfraBRanch}.tar.gz | tar -zxf -')
+    def buildInfraPath = pipelineParams.get('buildInfraPath', 'build-infra-${buildInfraBranch}')
+
     // build is in .gitignore so we can use it as a temp dir
     sh 'mkdir -p build'
-    sh 'cd build && curl -sfL https://github.com/ome/build-infra/archive/master.tar.gz | tar -zxf -'
+    sh 'cd build && curl -sfL ${buildInfraUrl} | tar -zxf -'
     sh 'virtualenv build/venv && build/venv/bin/pip install scc'
 
     copyArtifacts(projectName: pipelineParams.parentVersions, flatten: false,
@@ -23,7 +29,7 @@ def call(Map pipelineParams) {
             export GIT_USER=${env.MERGE_GIT_USER}
         fi
         export STATUS=${params.STATUS} MERGE_OPTIONS="${params.MERGE_OPTIONS}"
-        bash build/build-infra-master/recursive-merge
+        bash build/${buildInfraPath}/recursive-merge
     """
 
     archiveArtifacts artifacts: 'build/version.tsv'
