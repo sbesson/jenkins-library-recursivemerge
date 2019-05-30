@@ -2,11 +2,11 @@ def call(Map pipelineParams) {
 
     def buildInfraRepo = pipelineParams.get('buildInfraRepo', 'joshmoore')
     def buildInfraBranch = pipelineParams.get('buildInfraBranch', 'single-repo')
-    def buildInfraUrl = pipelineParams.get('buildInfraUrl', 'https://github.com/${buildInfraRepo}/build-infra/archive/${buildInfraBRanch}.tar.gz | tar -zxf -')
+    def buildInfraUrl = pipelineParams.get('buildInfraUrl', 'https://github.com/${buildInfraRepo}/build-infra/archive/${buildInfraBranch}.tar.gz | tar -zxf -')
     def buildInfraPath = pipelineParams.get('buildInfraPath', 'build-infra-${buildInfraBranch}')
 
     copyArtifacts(projectName: pipelineParams.parentVersions, flatten: false,
-                    filter: pipelineParams.versionFile, target: 'build')
+                    filter: pipelineParams.versionFile, target: '.')
 
     // build is in .gitignore so we can use it as a temp dir
     sh 'mkdir -p build'
@@ -17,7 +17,7 @@ def call(Map pipelineParams) {
         export BASE_REPO=${pipelineParams.baseRepo}
 
         # Workaround for "unflattened" file, possibly due to matrix
-        find build/ -path "${pipelineParams.versionFile}" -exec cp {} build/version.tsv \\;
+        find . -path "${pipelineParams.versionFile}" -exec cp {} build/version.tsv \\;
         export VERSION_LOG=${pwd()}/build/version.tsv
 
         . build/venv/bin/activate
