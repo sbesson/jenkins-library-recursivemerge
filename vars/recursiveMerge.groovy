@@ -5,7 +5,6 @@ def call(Map pipelineParams) {
     def buildInfraUrl = pipelineParams.get('buildInfraUrl', 'https://github.com/${buildInfraRepo}/build-infra/archive/${buildInfraBRanch}.tar.gz | tar -zxf -')
     def buildInfraPath = pipelineParams.get('buildInfraPath', 'build-infra-${buildInfraBranch}')
 
-    cleanWs()
     copyArtifacts(projectName: pipelineParams.parentVersions, flatten: false,
                     filter: pipelineParams.versionFile, target: 'build')
 
