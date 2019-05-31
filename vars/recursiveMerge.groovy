@@ -19,11 +19,10 @@ def call(Map pipelineParams) {
     def mergeOptions = params.MERGE_OPTIONS
     def status = params.STATUS
 
-    copyArtifacts(projectName: pipelineParams.parentVersions, flatten: false,
-                    filter: versionFile, target: '.')
-
     // build is in .gitignore so we can use it as a temp dir
-    sh "mkdir -p build"
+    copyArtifacts(projectName: pipelineParams.parentVersions, flatten: false,
+                    filter: versionFile, target: 'build')
+
     sh "cd build && curl -sfL ${buildInfraUrl} | tar -zxf -"
     sh "virtualenv build/venv && build/venv/bin/pip install scc"
 
@@ -31,7 +30,7 @@ def call(Map pipelineParams) {
         export BASE_REPO=${baseRepo}
 
         # Workaround for "unflattened" file, possibly due to matrix
-        find . -path "${versionFile}" -exec cp {} build/version.tsv \\;
+        find . -path "build/${versionFile}" -exec cp {} build/version.tsv \\;
         export VERSION_LOG=${currentDir}/build/version.tsv
 
         . build/venv/bin/activate
