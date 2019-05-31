@@ -4,8 +4,8 @@ def call(Map pipelineParams) {
         pipelineParams = ["new": true]
     }
 
-    def buildInfraRepo = pipelineParams.buildInfraRepo ?: "joshmoore"
-    def buildInfraBranch = pipelineParams.buildInfraBranch ?: "single-repo"
+    def buildInfraRepo = pipelineParams.buildInfraRepo ?: "ome"
+    def buildInfraBranch = pipelineParams.buildInfraBranch ?: "master"
     def buildInfraUrl = pipelineParams.buildInfraUrl ?: "https://github.com/${buildInfraRepo}/build-infra/archive/${buildInfraBranch}.tar.gz"
     def buildInfraPath = pipelineParams.buildInfraPath ?: "build-infra-${buildInfraBranch}"
 
