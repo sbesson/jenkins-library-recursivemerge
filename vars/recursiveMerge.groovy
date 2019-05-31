@@ -1,33 +1,47 @@
 def call(Map pipelineParams) {
 
-    def buildInfraRepo = pipelineParams.buildInfraRepo ?: 'joshmoore'
-    def buildInfraBranch = pipelineParams.buildInfraBranch ?: 'single-repo'
-    def buildInfraUrl = pipelineParams.buildInfraUrl ?: 'https://github.com/${buildInfraRepo}/build-infra/archive/${buildInfraBranch}.tar.gz | tar -zxf -'
-    def buildInfraPath = pipelineParams.buildInfraPath ?: 'build-infra-${buildInfraBranch}'
+    if (pipelineParams == null) {
+        pipelineParams = ["new": true]
+    }
+
+    def buildInfraRepo = pipelineParams.buildInfraRepo ?: "joshmoore"
+    def buildInfraBranch = pipelineParams.buildInfraBranch ?: "single-repo"
+    def buildInfraUrl = pipelineParams.buildInfraUrl ?: "https://github.com/${buildInfraRepo}/build-infra/archive/${buildInfraBranch}.tar.gz | tar -zxf -"
+    def buildInfraPath = pipelineParams.buildInfraPath ?: "build-infra-${buildInfraBranch}"
+
+    def baseRepo = pipelineParams.baseRepo ?: "unknown.git"
+    def versionFile = pipelineParams.versionFile ?: "build/version.tsv"
+
+    // environment
+    def currentDir = pwd()
+    def pushBranch = env.MERGE_PUSH_BRANCH
+    def gitUser = env.MERGE_GIT_USER
+    def mergeOptions = params.MERGE_OPTIONS
+    def status = params.STATUS
 
     copyArtifacts(projectName: pipelineParams.parentVersions, flatten: false,
-                    filter: pipelineParams.versionFile, target: '.')
+                    filter: versionFile, target: '.')
 
     // build is in .gitignore so we can use it as a temp dir
-    sh 'mkdir -p build'
-    sh 'cd build && curl -sfL ${buildInfraUrl} | tar -zxf -'
-    sh 'virtualenv build/venv && build/venv/bin/pip install scc'
+    sh "mkdir -p build"
+    sh "cd build && curl -sfL ${buildInfraUrl} | tar -zxf -"
+    sh "virtualenv build/venv && build/venv/bin/pip install scc"
 
     sh """
-        export BASE_REPO=${pipelineParams.baseRepo}
+        export BASE_REPO=${baseRepo}
 
         # Workaround for "unflattened" file, possibly due to matrix
-        find . -path "${pipelineParams.versionFile}" -exec cp {} build/version.tsv \\;
-        export VERSION_LOG=${pwd()}/build/version.tsv
+        find . -path "${versionFile}" -exec cp {} build/version.tsv \\;
+        export VERSION_LOG=${currentDir}/build/version.tsv
 
         . build/venv/bin/activate
-        if [ "${env.MERGE_PUSH_BRANCH}" != "null" ]; then
-            export PUSH_BRANCH=${env.MERGE_PUSH_BRANCH}
+        if [ "${pushBranch}" != "null" ]; then
+            export PUSH_BRANCH=${pushBranch}
         fi
-        if [ "${env.MERGE_GIT_USER}" != "null" ]; then
-            export GIT_USER=${env.MERGE_GIT_USER}
+        if [ "${gitUser}" != "null" ]; then
+            export GIT_USER=${gitUser}
         fi
-        export STATUS=${params.STATUS} MERGE_OPTIONS="${params.MERGE_OPTIONS}"
+        export STATUS=${status} MERGE_OPTIONS="${mergeOptions}"
         bash build/${buildInfraPath}/recursive-merge
     """
 
