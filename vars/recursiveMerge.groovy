@@ -20,7 +20,7 @@ def call(Map pipelineParams) {
     def status = params.STATUS
 
     // build is in .gitignore so we can use it as a temp dir
-    copyArtifacts(projectName: pipelineParams.parentVersions, flatten: false,
+    copyArtifacts(projectName: pipelineParams.parentVersions, flatten: true,
                     filter: versionFile, target: 'build')
 
     sh "cd build && curl -sfL ${buildInfraUrl} | tar -zxf -"
@@ -29,8 +29,6 @@ def call(Map pipelineParams) {
     sh """
         export BASE_REPO=${baseRepo}
 
-        # Workaround for "unflattened" file, possibly due to matrix
-        find . -path "build/${versionFile}" -exec cp {} build/version.tsv \\;
         export VERSION_LOG=${currentDir}/build/version.tsv
 
         . build/venv/bin/activate
