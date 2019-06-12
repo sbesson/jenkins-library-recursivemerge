@@ -58,7 +58,7 @@ def call(Map pipelineParams) {
     def pushBranch = env.MERGE_PUSH_BRANCH
     def gitUser = env.MERGE_GIT_USER
     def mergeOptions = params.MERGE_OPTIONS
-    def status = params.STATUS
+    def status = params.STATUS ?: "success-only"
 
     // build is in .gitignore so we can use it as a temp dir
     copyArtifacts(projectName: pipelineParams.parentVersions, flatten: true,
