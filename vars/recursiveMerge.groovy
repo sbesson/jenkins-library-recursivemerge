@@ -64,6 +64,8 @@ def call(Map pipelineParams) {
         // build is in .gitignore so we can use it as a temp dir
         copyArtifacts(projectName: pipelineParams.parentVersions, flatten: true,
                         filter: versionFile, target: 'build')
+    } else {
+        sh "mkdir -p build"
     }
 
     sh "cd build && curl -sfL ${buildInfraUrl} | tar -zxf -"
