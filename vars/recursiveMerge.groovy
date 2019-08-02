@@ -51,6 +51,7 @@ def call(Map pipelineParams) {
     def buildInfraPath = pipelineParams.buildInfraPath ?: "build-infra-${buildInfraBranch}"
 
     def baseRepo = pipelineParams.baseRepo ?: "unknown.git"
+    def baseBranch = pipelineParams.baseBranch ?: "master"
     def versionFile = pipelineParams.versionFile ?: "build/version.tsv"
 
     // environment
@@ -73,6 +74,7 @@ def call(Map pipelineParams) {
 
     sh """
         export BASE_REPO=${baseRepo}
+        export BASE_BRANCH=${baseBranch}
 
         export VERSION_LOG=${currentDir}/build/version.tsv
 
