@@ -11,7 +11,7 @@ def call(Map pipelineParams) {
 
     checkout poll: false,
            scm: [$class: 'GitSCM',
-                 branches: [[name: '*/${branch}']],
+                 branches: [[name: "*/${branch}"]],
                  doGenerateSubmoduleConfigurations: false,
                  extensions: [[$class: 'CleanCheckout'],
                               [$class: 'SubmoduleOption', disableSubmodules: false, parentCredentials: false, recursiveSubmodules: true, reference: '', trackingSubmodules: false]],
