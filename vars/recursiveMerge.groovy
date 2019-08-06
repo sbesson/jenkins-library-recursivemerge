@@ -51,6 +51,7 @@ def call(Map pipelineParams) {
     def buildInfraPath = pipelineParams.buildInfraPath ?: "build-infra-${buildInfraBranch}"
 
     def baseRepo = pipelineParams.baseRepo ?: "unknown.git"
+    def baseBranch = pipelineParams.baseBranch ?: "master"
     def versionFile = pipelineParams.versionFile ?: "build/version.tsv"
 
     // environment
@@ -60,15 +61,20 @@ def call(Map pipelineParams) {
     def mergeOptions = params.MERGE_OPTIONS
     def status = params.STATUS ?: "success-only"
 
-    // build is in .gitignore so we can use it as a temp dir
-    copyArtifacts(projectName: pipelineParams.parentVersions, flatten: true,
-                    filter: versionFile, target: 'build')
+    if (pipelineParams.parentVersions != null) {
+        // build is in .gitignore so we can use it as a temp dir
+        copyArtifacts(projectName: pipelineParams.parentVersions, flatten: true,
+                        filter: versionFile, target: 'build')
+    } else {
+        sh "mkdir -p build"
+    }
 
     sh "cd build && curl -sfL ${buildInfraUrl} | tar -zxf -"
     sh "virtualenv build/venv && build/venv/bin/pip install scc"
 
     sh """
         export BASE_REPO=${baseRepo}
+        export BASE_BRANCH=${baseBranch}
 
         export VERSION_LOG=${currentDir}/build/version.tsv
 
