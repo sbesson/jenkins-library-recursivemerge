@@ -53,6 +53,7 @@ def call(Map pipelineParams) {
     def baseRepo = pipelineParams.baseRepo ?: "unknown.git"
     def baseBranch = pipelineParams.baseBranch ?: "master"
     def versionFile = pipelineParams.versionFile ?: "build/version.tsv"
+    def sccLibrary = pipelineParams.versionFile ?: "build/version.tsv"
 
     // environment
     def currentDir = pwd()
@@ -70,7 +71,7 @@ def call(Map pipelineParams) {
     }
 
     sh "cd build && curl -sfL ${buildInfraUrl} | tar -zxf -"
-    sh "virtualenv build/venv && build/venv/bin/pip install scc"
+    sh "virtualenv build/venv && build/venv/bin/pip install https://github.com/sbesson/snoopycrimecop/archive/push_command.zip"
 
     sh """
         export BASE_REPO=${baseRepo}
