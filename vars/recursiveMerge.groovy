@@ -54,6 +54,8 @@ def call(Map pipelineParams) {
     def baseBranch = pipelineParams.baseBranch ?: "master"
     def versionFile = pipelineParams.versionFile ?: "build/version.tsv"
 
+    def sccPackage = pipelineParams.sccPackage ?: "scc"
+
     // environment
     def currentDir = pwd()
     def pushBranch = env.MERGE_PUSH_BRANCH
@@ -70,7 +72,7 @@ def call(Map pipelineParams) {
     }
 
     sh "cd build && curl -sfL ${buildInfraUrl} | tar -zxf -"
-    sh "virtualenv build/venv && build/venv/bin/pip install scc"
+    sh "virtualenv build/venv && build/venv/bin/pip install ${sccPackage}"
 
     sh """
         export BASE_REPO=${baseRepo}
