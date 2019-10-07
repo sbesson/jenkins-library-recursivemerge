@@ -54,7 +54,7 @@ def call(Map pipelineParams) {
     def baseBranch = pipelineParams.baseBranch ?: "master"
     def versionFile = pipelineParams.versionFile ?: "build/version.tsv"
 
-    def sccPackage = pipelineParams.sccPackage ?: "https://github.com/sbesson/snoopycrimecop/archive/fast_forward_exception.zip"
+    def sccPackage = pipelineParams.sccPackage ?: "scc"
 
     // environment
     def currentDir = pwd()
