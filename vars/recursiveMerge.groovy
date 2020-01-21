@@ -75,7 +75,7 @@ def call(Map pipelineParams) {
     pushd build
     curl -sfL ${buildInfraUrl} | tar -zxf -
     popd
-    virtualenv build/venv
+    python -m venv build/venv
     . build/venv/bin/activate
     pip install -U pip setuptools
     pip install ${sccPackage}
