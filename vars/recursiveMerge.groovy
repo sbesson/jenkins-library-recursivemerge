@@ -77,8 +77,7 @@ def call(Map pipelineParams) {
     popd
     python -m venv build/venv
     . build/venv/bin/activate
-    pip install -U pip setuptools
-    pip install ${sccPackage}
+    python -m pip install ${sccPackage}
     """
 
     sh """
