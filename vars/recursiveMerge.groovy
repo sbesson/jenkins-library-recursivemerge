@@ -71,8 +71,15 @@ def call(Map pipelineParams) {
         sh "mkdir -p build"
     }
 
-    sh "cd build && curl -sfL ${buildInfraUrl} | tar -zxf -"
-    sh "virtualenv build/venv && build/venv/bin/pip install ${sccPackage}"
+    sh """
+    pushd build
+    curl -sfL ${buildInfraUrl} | tar -zxf -
+    popd
+    virtualenv build/venv
+    . build/venv/bin/activate
+    pip install -U pip setuptools
+    pip install ${sccPackage}
+    """
 
     sh """
         export BASE_REPO=${baseRepo}
