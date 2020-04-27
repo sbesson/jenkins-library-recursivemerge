@@ -68,7 +68,10 @@ def call(Map pipelineParams) {
         copyArtifacts(projectName: pipelineParams.parentVersions, flatten: true,
                         filter: versionFile, target: 'build')
     } else {
-        sh "mkdir -p build"
+        sh """
+        mkdir -p build
+        echo build > .git/info/exclude
+        """
     }
 
     sh """
